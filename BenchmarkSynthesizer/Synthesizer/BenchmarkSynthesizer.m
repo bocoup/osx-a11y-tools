@@ -113,52 +113,6 @@ static CFStringRef CopyCFStringFromOSType(OSType type);
 
 @end
 
-CFReadStreamRef readStream;
-CFWriteStreamRef writeStream;
-
-NSInputStream *inputStream;
-NSOutputStream *outputStream;
-
-static void tcpOpen()
-{
-    NSLog(@"Opening streams.");
-
-    inputStream = (NSInputStream *)readStream;
-    outputStream = (NSOutputStream *)writeStream;
-
-    [inputStream retain];
-    [outputStream retain];
-
-    //[inputStream setDelegate:self];
-    //[outputStream setDelegate:self];
-
-    [inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
-    [inputStream open];
-    [outputStream open];
-}
-
-static void tcpClose()
-{
-    NSLog(@"Closing streams.");
-
-    [inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
-    //[inputStream setDelegate:nil];
-    //[outputStream setDelegate:nil];
-
-    [inputStream close];
-    [outputStream close];
-
-    [inputStream release];
-    [outputStream release];
-
-    inputStream = nil;
-    outputStream = nil;
-}
-
 static void tcpSend(NSString* string)
 {
     NSString *host = @"http://127.0.0.1";
@@ -168,6 +122,9 @@ static void tcpSend(NSString* string)
 
     NSLog(@"Setting up connection to %@ : %i", [url absoluteString], port);
 
+    CFReadStreamRef readStream;
+    CFWriteStreamRef writeStream;
+
     CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, (CFStringRef)[url host], port, &readStream, &writeStream);
 
     if(!CFWriteStreamOpen(writeStream)) {
@@ -176,13 +133,48 @@ static void tcpSend(NSString* string)
         return;
     }
 
-    tcpOpen();
+    NSInputStream *inputStream;
+    NSOutputStream *outputStream;
+
+    NSLog(@"Opening streams.");
+    {
+        inputStream = (NSInputStream *)readStream;
+        outputStream = (NSOutputStream *)writeStream;
+
+        [inputStream retain];
+        [outputStream retain];
+
+        //[inputStream setDelegate:self];
+        //[outputStream setDelegate:self];
+
+        [inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+        [inputStream open];
+        [outputStream open];
+    }
 
     uint8_t *buf = (uint8_t *)[string UTF8String];
 
     [outputStream write:buf maxLength:strlen((char *)buf)];
 
-    tcpClose();
+    NSLog(@"Closing streams.");
+    {
+        [inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+        //[inputStream setDelegate:nil];
+        //[outputStream setDelegate:nil];
+
+        [inputStream close];
+        [outputStream close];
+
+        [inputStream release];
+        [outputStream release];
+
+        inputStream = nil;
+        outputStream = nil;
+    }
 }
 
 long	SEOpenSpeechChannel( SpeechChannelIdentifier* ssr )
