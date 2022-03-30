@@ -50,7 +50,7 @@ $(COMPONENT): $(DEPSDIR) $(BINARIES) $(COMPONENT_PFILE)
 		--component-plist $(COMPONENT_PFILE) \
 		$(COMPONENT)
 
-$(DISTRIBUTION_FILE):
+$(DISTRIBUTION_FILE): $(COMPONENT)
 	productbuild \
 		--synthesize \
 		--product $(REQUIREMENTS) \
