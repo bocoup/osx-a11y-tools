@@ -29,6 +29,7 @@ $(PRODUCT): $(BINARIES) $(REQUIREMENTS) $(COMPONENT_PFILE) $(COMPONENT) $(DISTRI
 	productbuild \
 		--distribution $(DISTRIBUTION_FILE) \
 		--resources . \
+		--package-path $(DEPSDIR) \
 		--package-path $(COMPONENT) \
 		$(PRODUCT)
 
