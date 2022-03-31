@@ -39,12 +39,14 @@ $(BINARIES):
 
 $(COMPONENT_PFILE):
 	pkgbuild \
+		--min-os-version 10.15 \
 		--analyze \
 		--root $(BINARIES) \
 		$(COMPONENT_PFILE)
 
 $(COMPONENT): $(DEPSDIR) $(BINARIES) $(COMPONENT_PFILE)
 	pkgbuild \
+		--min-os-version 10.15 \
 		--identifier $(IDENTIFIER) \
 		--root $(BINARIES) \
 		--component-plist $(COMPONENT_PFILE) \
