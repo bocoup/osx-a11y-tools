@@ -35,7 +35,10 @@ $(PRODUCT): $(BINARIES) $(REQUIREMENTS) $(COMPONENT_PFILE) $(COMPONENT) $(DISTRI
 
 $(BINARIES):
 	mkdir -p $(BINARIES)
-	xcodebuild install DSTROOT=$(BINARIES)
+	xcodebuild install \
+		DSTROOT=$(BINARIES) \
+		MACOSX_DEPLOYMENT_TARGET=10.15 \
+		SDKROOT=macosx10.15
 
 $(COMPONENT_PFILE):
 	pkgbuild \

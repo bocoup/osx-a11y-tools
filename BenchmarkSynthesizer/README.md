@@ -15,7 +15,12 @@ Then run `sudo pkill -f com.apple.speech.speechsynthesisd`
 
 ## Packaging
 
-To create a package suitable for installation in another macOS environment, run
-the following command:
+To create a package suitable for installation in another macOS environment
+(macOS 10.15 or later):
+
+1. Install the Mac OSX 10.15 SDK (this is included in Xcode 11.7 and can be
+   download from Apple using a valid AppleID using [the link maintained
+   here](https://github.com/devernay/xcodelegacy))
+2. run the following command:
 
     make
