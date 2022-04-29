@@ -154,9 +154,19 @@ static void tcpSend(NSString* string)
         [outputStream open];
     }
 
-    uint8_t *buf = (uint8_t *)[string UTF8String];
+    // Block the thread until the stream is no longer opening.
+    while ([outputStream streamStatus] == NSStreamStatusOpening) {}
 
-    [outputStream write:buf maxLength:strlen((char *)buf)];
+    // The stream will report a status of NSStreamStatusError if no process is
+    // listening on the TCP port.
+    if ([outputStream streamStatus] == NSStreamStatusOpen) {
+        NSLog(@"Writing buffer to stream: \"%@\".", string);
+
+        uint8_t *buf = (uint8_t *)[string UTF8String];
+        [outputStream write:buf maxLength:strlen((char *)buf)];
+    } else {
+        NSLog(@"Unable to write buffer to stream: \"%@\".", string);
+    }
 
     NSLog(@"Closing streams.");
     {
